@@ -1,7 +1,7 @@
 package org.kobjects.android64;
 
-interface MemoryListener {
+public interface MemoryListener {
 
-  void poke(int address, int value);
+  void set(int address, int value);
 
 }

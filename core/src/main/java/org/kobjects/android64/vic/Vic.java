@@ -1,8 +1,7 @@
-package org.kobjects.android64;
+package org.kobjects.android64.vic;
 
-import android.graphics.Bitmap;
-
-import org.kobjects.graphics.Sprite;
+import org.kobjects.android64.Android64;
+import org.kobjects.android64.MemoryListener;
 
 
 public class Vic implements MemoryListener {
@@ -46,17 +45,20 @@ public class Vic implements MemoryListener {
   final Android64 android64;
   final SpriteManager[] spriteManagers = new SpriteManager[8];
 
-  Vic(Android64 android64) {
+  public Vic(Android64 android64) {
     this.android64 = android64;
-    android64.addMemoryListener(0x7f8, 0x7ff, new SpriteAddressManager());
+
+    android64.addMemoryListener(0x7f8, 0x7ff, (address, value) ->
+      spriteManagers[address].setAddress(value * 64));
+
     android64.addMemoryListener(0xD000, 0xd030, this);
     for (int i = 0; i < 8; i++) {
-      spriteManagers[i] = new SpriteManager(i);
+      spriteManagers[i] = new SpriteManager(this, i);
     }
   }
 
 
-  public void poke(int address, int value) {
+  public void set(int address, int value) {
     switch (address) {
       case 0x00:
       case 0x02:
@@ -82,7 +84,7 @@ public class Vic implements MemoryListener {
         break;
       case 0x10:
         for (int i = 0; i < 8; i++) {
-          poke(i, android64.peek(0xd000 + i));
+          set(i, android64.peek(0xd000 + i));
         }
         break;
       case 0x15:
@@ -104,6 +106,9 @@ public class Vic implements MemoryListener {
         break;
       case 0x1d:
         // double horizontally
+        break;
+      case 0x21:
+        android64.getScreen().view.setBackgroundColor(PALETTE[value&15]);
         break;
       case 0x25:
       case 0x26:
@@ -131,71 +136,9 @@ public class Vic implements MemoryListener {
 
   class SpriteAddressManager implements MemoryListener {
     @Override
-    public void poke(int address, int value) {
+    public void set(int address, int value) {
       spriteManagers[address].setAddress(value * 64);
     }
   }
 
-  class SpriteManager implements MemoryListener {
-    boolean multiColor;
-    final int index;
-    final Sprite sprite;
-    final int[] colorTable = new int[4];
-    IntervalTree.IntervalNode<MemoryListener> node;
-    final Bitmap bitmap = Bitmap.createBitmap(24, 24, Bitmap.Config.ARGB_8888);
-
-    SpriteManager(int index) {
-      this.index = index;
-      this.sprite = new Sprite(android64.screen);
-      // this.sprite.setOpacity(0);
-      sprite.setSize(fromPx(24));
-      sprite.setBitmap(bitmap);
-      setAddress(0);
-    }
-
-    void setColor(int index, int value) {
-      if (colorTable[index] != PALETTE[value&15]) {
-        colorTable[index] = PALETTE[value&15];
-        refresh();
-      }
-    }
-
-    void setMultiColor(boolean multiColor) {
-      if (multiColor != this.multiColor) {
-        this.multiColor = multiColor;
-        refresh();
-      }
-    }
-
-    @Override
-    public void poke(int address, int value) {
-      if (multiColor) {
-        for (int i = 0; i < 8; i += 2) {
-          int y = address / 3;
-          int x = (address % 3) * 8 + i;
-          int color = colorTable[((value & (192>>i)) >> (6-i))];
-          bitmap.setPixel(x, y, color);
-          bitmap.setPixel(x + 1, y, color);
-        }
-      } else {
-        for (int i = 0; i < 8; i ++) {
-          bitmap.setPixel((address % 3) * 8 + i, address / 3, colorTable[((value & (128 >> i)) >> (7-i)) << 1]);
-        }
-      }
-    }
-
-    void refresh() {
-      for (int i = 0; i < 63; i++) {
-        poke(i, android64.peek(node.start + i));
-      }
-    }
-
-    void setAddress(int start) {
-      if (node != null) {
-        android64.removeMemoryManager(node);
-      }
-      node = android64.addMemoryListener(start, start + 64, this);
-      refresh();
-    }
-  }
 }

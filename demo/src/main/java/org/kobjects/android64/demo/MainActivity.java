@@ -1,7 +1,5 @@
 package org.kobjects.android64.demo;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,7 +8,7 @@ import com.vanniktech.emoji.EmojiManager;
 import com.vanniktech.emoji.twitter.TwitterEmojiProvider;
 
 import org.kobjects.android64.Android64;
-import org.kobjects.android64.Vic;
+import org.kobjects.android64.vic.Vic;
 import org.kobjects.graphics.Screen;
 
 import java.util.concurrent.LinkedBlockingQueue;

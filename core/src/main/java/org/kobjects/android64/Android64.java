@@ -1,5 +1,6 @@
 package org.kobjects.android64;
 
+import org.kobjects.android64.vic.Vic;
 import org.kobjects.graphics.Screen;
 
 public class Android64 {
@@ -14,15 +15,18 @@ public class Android64 {
     vic = new Vic(this);
   }
 
+  public Screen getScreen() {
+    return screen;
+  }
 
-  IntervalTree.IntervalNode<MemoryListener> addMemoryListener(int startAddress, int endAdress, MemoryListener listener) {
+  public IntervalTree.IntervalNode<MemoryListener> addMemoryListener(int startAddress, int endAdress, MemoryListener listener) {
     return memoryListeners.add(startAddress, endAdress, listener);
   }
 
   public Android64 poke(int address, int value) {
     memory[address] = (byte) value;
     for (IntervalTree.IntervalNode<? extends MemoryListener> listenerInterval : memoryListeners.find(address)) {
-      listenerInterval.data.poke(address - listenerInterval.start, value);
+      listenerInterval.data.set(address - listenerInterval.start, value);
     }
     return this;
   }
