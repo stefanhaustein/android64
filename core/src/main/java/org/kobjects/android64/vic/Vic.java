@@ -44,14 +44,19 @@ public class Vic implements MemoryListener {
 
   final Android64 android64;
   final SpriteManager[] spriteManagers = new SpriteManager[8];
+  final ScreenManager screenManager;
 
   public Vic(Android64 android64) {
     this.android64 = android64;
+    screenManager = new ScreenManager(this);
 
+    android64.addMemoryListener(0xD000, 0xd030, this);
+
+    // Sprite memory location management
     android64.addMemoryListener(0x7f8, 0x7ff, (address, value) ->
       spriteManagers[address].setAddress(value * 64));
 
-    android64.addMemoryListener(0xD000, 0xd030, this);
+    // Sprites
     for (int i = 0; i < 8; i++) {
       spriteManagers[i] = new SpriteManager(this, i);
     }
@@ -134,11 +139,5 @@ public class Vic implements MemoryListener {
   }
 
 
-  class SpriteAddressManager implements MemoryListener {
-    @Override
-    public void set(int address, int value) {
-      spriteManagers[address].setAddress(value * 64);
-    }
-  }
 
 }

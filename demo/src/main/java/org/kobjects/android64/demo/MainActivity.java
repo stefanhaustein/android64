@@ -14,25 +14,36 @@ import org.kobjects.graphics.Screen;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
-/**
- *
- */
-public class MainActivity extends Activity implements Runnable {
+public class MainActivity extends Activity {
 
   static final int V = 53248;
-  static final int[] DATA = {
-      // REM SPRITE C64-WIKI.DE (einfarbig; Sprite 0)
-      239,81,85,139,81,20,137,81,28,137,81,89,137,213,89,142,85,93,138,
-      95,85,138,91,85,238,91,85,0,0,0,0,0,0,0,0,0,
-      0,199,0,0,231,0,0,164,0,0,180,0,0,151,0,0,180,0,0,164,0,0,231,0,0,199,0,
-
-      // REM Multicolor-Sprite Linie (Sprite 1&2)
-      0,255,255,255,170,85,170,170,85,170,85,170,85,85,170,85,255,255,255
-  };
+  static final int S = 54272;
+  static final int FRAME_MS = 1000/60;
 
   Android64 a64;
   LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
   boolean paused;
+
+  private void wait(int ms) {
+    if (!paused) {
+      queue.add("token");
+    }
+    try {
+      Thread.sleep(ms);
+      queue.take();
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  void poke(int addr, int value) {
+    a64.poke(addr, value);
+  }
+
+  int peek(int addr) {
+    return a64.peek(addr);
+  }
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -45,23 +56,40 @@ public class MainActivity extends Activity implements Runnable {
     a64 = new Android64(screen);
     screen.view.setBackgroundColor(Vic.ARGB_BLUE);
     setContentView(screen.view);
-
-
-    new Thread(this).start();
   }
 
 
   public boolean onCreateOptionsMenu(Menu menu) {
     super.onCreateOptionsMenu(menu);
 
-    menu.add(0, 0, 0, "Restart").setOnMenuItemClickListener(x -> {new Thread(this).start(); return true;});
+    menu.add("Character Set").setOnMenuItemClickListener(x -> {new Thread(() -> charset()).start(); return true;});
+    menu.add("C64 Wiki Sprite Demo").setOnMenuItemClickListener(x -> {new Thread(() -> c64wikiSpriteDemo()).start(); return true;});
+    menu.add("SID Demo").setOnMenuItemClickListener(x -> {new Thread(() -> sidDemo()).start(); return true;});
+
     return true;
   }
 
+  public void charset() {
+    for (int i = 1024; i <2024; i++) {
+      poke(i, i & 255);
+    }
+  }
 
-    public void run() {
+
+  public void c64wikiSpriteDemo() {
+    final int[] DATA =  {
+      // REM SPRITE C64-WIKI.DE (einfarbig; Sprite 0)
+      239,81,85,139,81,20,137,81,28,137,81,89,137,213,89,142,85,93,138,
+      95,85,138,91,85,238,91,85,0,0,0,0,0,0,0,0,0,
+      0,199,0,0,231,0,0,164,0,0,180,0,0,151,0,0,180,0,0,164,0,0,231,0,0,199,0,
+
+      // REM Multicolor-Sprite Linie (Sprite 1&2)
+      0,255,255,255,170,85,170,170,85,170,85,170,85,85,170,85,255,255,255
+    };
+
     // REM Bildschirmbereinigung
     poke(V + 33, 0);
+
 
     // REM Sprite-Generierung
     for (int x = 12800; x <= 12881; x++) {
@@ -88,7 +116,7 @@ public class MainActivity extends Activity implements Runnable {
         z += 0.61;
         poke(V + 3, (int) z);
         poke(V + 4, (201 - x) / 2);
-        vsync();
+        wait(FRAME_MS);
       }
 
     poke(V +16, 0); poke(V, 255);
@@ -97,55 +125,80 @@ public class MainActivity extends Activity implements Runnable {
     for (int x = 255; x >= 170; x--) {
       poke(V, x);
       z = z + 0.66;
-        poke(V + 3, (int) z);
-        poke(V + 4, (int) (m + (256 - x) / 1.2));
-        vsync();
-      }
+      poke(V + 3, (int) z);
+      poke(V + 4, (int) (m + (256 - x) / 1.2));
+      wait(FRAME_MS);
+    }
 
-      for(int x = 0 ; x <= 5; x++) {
-        for (int y = 1; y <= 255; y++) {
-          poke(V + 37 + x, y);
-          vsync();
-        }
+    for(int x = 0 ; x <= 5; x++) {
+      for (int y = 1; y <= 255; y++) {
+        poke(V + 37 + x, y);
+        wait(3);
       }
+    }
 
       poke(V +38, 2); poke(V +39, 7); poke (V +41, 6);
       for (int y = 1; y <= 65; y++) {
         poke(V + 40, y);
         poke(V + 37, y + 10);
-        for (z = 0; z <= 15; z++) {
-          poke(V + 39, (int) z);
-        }
-        vsync();
+        wait(FRAME_MS);
       }
 
       // REM Warten, löschen von Sprite 0 und Ausblendung
-      for (int x = 0; x <= 30; x++){
-        vsync();
-      }
+      wait(3000);
+
       for (int x = 0; x <= 32; x++) {
         poke(12832 + x, 0);
         poke(12832 - x, 0);
-        vsync();
+        wait(100);
       }
       poke(V +21, 0);
 
   }
 
+  void sidDemo() {
+    // Ported from https://www.lemon64.com/manual/manual/8_1.html
 
+    final int[] DATA= {
+        25,177,250,28,214,250,
+        25,177,250,25,177,250,
+        25,177,125,28,214,125,
+        32,94,750,25,177,250,
+        28,214,250,19,63,250,
+        19,63,250,19,63,250,
+        21,154,63,24,63,63,
+        25,177,250,24,63,125,
+        19,63,250,-1,-1,-1
+    };
 
-
-  private void vsync() {
-    if (!paused) {
-      queue.add("token");
+    for (int l = S; l < S + 24; l++) {
+      poke(l, 0);
     }
-    try {
-      Thread.sleep(1000/60);
-      queue.take();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+    poke(S + 5, 9);
+    poke(S + 6, 0);
+    poke( S + 24,15); //  REM SET MAXIMUM VOLUME LEVEL
+
+    int index = 0;
+    while (true) {
+      int hf = DATA[index++];
+      int lf = DATA[index++];
+      int dr = DATA[index++];
+      if (hf < 0) {
+        break;
+      }
+      poke(S + 1, hf);
+      poke(S, lf);
+      poke(S + 4,33);
+
+      wait(dr);
+
+      poke (S + 4,32);
+      wait(50);
     }
+
   }
+
+
 
   @Override
   public void onPause() {
@@ -161,12 +214,5 @@ public class MainActivity extends Activity implements Runnable {
   }
 
 
-  void poke(int addr, int value) {
-    a64.poke(addr, value);
-  }
-
-  int peek(int addr) {
-    return a64.peek(addr);
-  }
 
 }

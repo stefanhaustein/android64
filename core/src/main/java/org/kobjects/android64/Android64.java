@@ -1,5 +1,6 @@
 package org.kobjects.android64;
 
+import org.kobjects.android64.sid.Sid;
 import org.kobjects.android64.vic.Vic;
 import org.kobjects.graphics.Screen;
 
@@ -7,12 +8,15 @@ public class Android64 {
 
   byte[] memory = new byte[65536];
   final Vic vic;
+  final Sid sid;
   final Screen screen;
   IntervalTree<MemoryListener> memoryListeners = new IntervalTree<>();
 
   public Android64(Screen screen) {
     this.screen = screen;
     vic = new Vic(this);
+    sid = new Sid(this);
+    memory[1] = -1;
   }
 
   public Screen getScreen() {
@@ -23,17 +27,23 @@ public class Android64 {
     return memoryListeners.add(startAddress, endAdress, listener);
   }
 
-  public Android64 poke(int address, int value) {
-    memory[address] = (byte) value;
-    for (IntervalTree.IntervalNode<? extends MemoryListener> listenerInterval : memoryListeners.find(address)) {
-      listenerInterval.data.set(address - listenerInterval.start, value);
+  public void poke(int address, int value) {
+    if (memory[address] != value) {
+      memory[address] = (byte) value;
+      for (IntervalTree.IntervalNode<? extends MemoryListener> listenerInterval : memoryListeners.find(address)) {
+        listenerInterval.data.set(address - listenerInterval.start, value);
+      }
     }
-    return this;
   }
 
-
   public int peek(int address) {
-    return memory[address] & 255;
+    return 255 & ((address >= 0xd000 && address < 0xf000 && (memory[1] & 4) == 0)
+        ? Rom.CHARACTER_DATA[address - 0xd000]
+        : memory[address]);
+  }
+
+  public int dpeek(int address) {
+    return peek(address) | (peek(address + 1) << 8);
   }
 
 

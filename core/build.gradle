@@ -43,7 +43,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     api "com.github.stefanhaustein.emojisprites:core:master-SNAPSHOT"
-    api "com.github.stefanhaustein.atg:core:master-SNAPSHOT"
+    api "com.github.stefanhaustein.android-tone-generator:core:v1.0.1"
 
     implementation 'androidx.appcompat:appcompat:1.0.2'
     testImplementation 'junit:junit:4.12'

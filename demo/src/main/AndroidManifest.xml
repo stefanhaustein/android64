@@ -6,6 +6,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="Android64 Demo"
+        android:configChanges="keyboardHidden|orientation|screenSize"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
         <activity android:name=".demo.MainActivity">
