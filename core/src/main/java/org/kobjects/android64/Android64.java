@@ -47,6 +47,36 @@ public class Android64 {
   }
 
 
+  void setCursor(int row, int col) {
+    poke(0xd4, row % 25);
+    poke(0xd6, col % 40);
+  }
+
+  public void cls() {
+    for (int i = 0; i < 80* 25; i++) {
+      poke(1024+i, 32);
+    }
+    setCursor(0, 0);
+  }
+
+  public void print(String s) {
+    for (int i = 0; i < s.length(); i++) {
+      print(s.charAt(i));
+    }
+  }
+
+
+  public void print(char c) {
+    int pos = 40 * peek(0xd3) + peek(0xd6);
+
+    poke(1024 + pos, c > 64 ? c - 64 : c);
+    pos++;
+
+    poke(0xd3, pos / 40);
+    poke(0xd6, pos % 40);
+  }
+
+
   public void removeMemoryManager(IntervalTree.IntervalNode<MemoryListener> node) {
     memoryListeners.remove(node);
   }

@@ -56,12 +56,15 @@ public class MainActivity extends Activity {
     a64 = new Android64(screen);
     screen.view.setBackgroundColor(Vic.ARGB_BLUE);
     setContentView(screen.view);
+
+    about();
   }
 
 
   public boolean onCreateOptionsMenu(Menu menu) {
     super.onCreateOptionsMenu(menu);
 
+    menu.add("About").setOnMenuItemClickListener(x -> {about(); return true;});
     menu.add("Character Set").setOnMenuItemClickListener(x -> {new Thread(() -> charset()).start(); return true;});
     menu.add("C64 Wiki Sprite Demo").setOnMenuItemClickListener(x -> {new Thread(() -> c64wikiSpriteDemo()).start(); return true;});
     menu.add("SID Demo").setOnMenuItemClickListener(x -> {new Thread(() -> sidDemo()).start(); return true;});
@@ -73,6 +76,11 @@ public class MainActivity extends Activity {
     for (int i = 1024; i <2024; i++) {
       poke(i, i & 255);
     }
+  }
+
+  public void about() {
+    a64.cls();
+    a64.print("ANDROID64 " + Runtime.getRuntime().freeMemory() + " KOTLIN BYTES FREE.");
   }
 
 
