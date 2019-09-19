@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 
 import com.vanniktech.emoji.EmojiManager;
-import com.vanniktech.emoji.twitter.TwitterEmojiProvider;
+import com.vanniktech.emoji.google.GoogleEmojiProvider;
 
 import org.kobjects.android64.Android64;
 import org.kobjects.android64.vic.Vic;
@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
     super.onCreate(savedInstanceState);
 
     // TODO: Shouldn't be needed here -- init sprites to "something else" by default...
-    EmojiManager.install(new TwitterEmojiProvider());
+    EmojiManager.install(new GoogleEmojiProvider());
 
     Screen screen = new Screen(this);
     a64 = new Android64(screen);

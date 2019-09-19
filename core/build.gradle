@@ -42,8 +42,8 @@ artifacts {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    api "com.github.stefanhaustein.emojisprites:core:master-SNAPSHOT"
-    api "com.github.stefanhaustein.android-tone-generator:core:v1.0.1"
+    implementation "com.github.stefanhaustein.emojisprites:core:v1.0.0"
+    implementation "com.github.stefanhaustein.android-tone-generator:core:v1.0.1"
 
     implementation 'androidx.appcompat:appcompat:1.0.2'
     testImplementation 'junit:junit:4.12'
