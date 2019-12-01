@@ -135,7 +135,7 @@ public class Vic implements MemoryListener {
   }
 
   static final float fromPx(int px) {
-    return 20 * px / 32f;
+    return px ;
   }
 
 

@@ -42,11 +42,12 @@ artifacts {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "com.github.stefanhaustein.emojisprites:core:v1.0.0"
+    implementation "com.github.stefanhaustein.emojisprites:core:v1.1.0"
     implementation "com.github.stefanhaustein.android-tone-generator:core:v1.0.1"
 
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.vanniktech:emoji:0.6.0'
 }

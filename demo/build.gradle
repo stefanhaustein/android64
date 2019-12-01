@@ -46,7 +46,7 @@ dependencies {
     implementation "com.github.stefanhaustein.emojisprites:core:master-SNAPSHOT"
 
     implementation project(path: ':core')
-    implementation 'com.vanniktech:emoji-google:0.7.0-SNAPSHOT'
-
+    implementation 'com.vanniktech:emoji:0.6.0'
+    implementation 'com.vanniktech:emoji-twitter:0.6.0'
 
 }

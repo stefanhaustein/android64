@@ -21,7 +21,7 @@ public class ScreenManager implements MemoryListener {
     android64 = vic.android64;
     screenBitmap = Bitmap.createBitmap(320, 320, Bitmap.Config.ARGB_8888);
     screenSprite = new Sprite(vic.android64.getScreen());
-    screenSprite.setSize(200);
+    screenSprite.setSize(Vic.fromPx(320));
     screenSprite.setBitmap(screenBitmap);
 
     intervalNode = vic.android64.addMemoryListener(1024, 2023, this);
