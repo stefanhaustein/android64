@@ -1,6 +1,7 @@
 package org.kobjects.android64.vic;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 
 import org.kobjects.android64.IntervalTree;
 import org.kobjects.android64.MemoryListener;
@@ -11,7 +12,7 @@ class SpriteManager implements MemoryListener {
   boolean multiColor;
   final int index;
   final Sprite sprite;
-  final int[] colorTable = new int[4];
+  final int[] colorTable = {0, Vic.ARGB_GREEN, Vic.ARGB_ORANGE, Color.BLACK};
   IntervalTree.IntervalNode<MemoryListener> node;
   final Bitmap bitmap = Bitmap.createBitmap(24, 24, Bitmap.Config.ARGB_8888);
 
@@ -26,8 +27,8 @@ class SpriteManager implements MemoryListener {
   }
 
   void setColor(int index, int value) {
-    if (colorTable[index] != Vic.PALETTE[value&15]) {
-      colorTable[index] = Vic.PALETTE[value&15];
+    if (colorTable[index] != Vic.PALETTE[value & 15]) {
+      colorTable[index] = Vic.PALETTE[value & 15];
       refresh();
     }
   }
@@ -51,7 +52,10 @@ class SpriteManager implements MemoryListener {
       }
     } else {
       for (int i = 0; i < 8; i ++) {
-        bitmap.setPixel((address % 3) * 8 + i, address / 3, colorTable[((value & (128 >> i)) >> (7-i)) << 1]);
+        int x = (address % 3) * 8 + i;
+        int y = address / 3;
+        int colorIndex = ((value & (128 >> i)) >> (7-i)) << 1;
+        bitmap.setPixel(x, y, colorTable[colorIndex]);
       }
     }
     sprite.setBitmap(bitmap);

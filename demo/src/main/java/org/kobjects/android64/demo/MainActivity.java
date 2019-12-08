@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     super.onCreateOptionsMenu(menu);
 
     menu.add("About").setOnMenuItemClickListener(x -> {about(); return true;});
+    menu.add("Balloon").setOnMenuItemClickListener(x -> {new Thread(() -> balloon()).start(); return true;});
     menu.add("Character Set").setOnMenuItemClickListener(x -> {new Thread(() -> charset()).start(); return true;});
     menu.add("C64 Wiki Sprite Demo").setOnMenuItemClickListener(x -> {new Thread(() -> c64wikiSpriteDemo()).start(); return true;});
     menu.add("SID Demo").setOnMenuItemClickListener(x -> {new Thread(() -> sidDemo()).start(); return true;});
@@ -83,6 +84,30 @@ public class MainActivity extends AppCompatActivity {
   public void about() {
     a64.cls();
     a64.print("ANDROID64 " + Runtime.getRuntime().freeMemory() + " KOTLIN BYTES FREE.");
+  }
+
+
+  public void balloon() {
+    int[] DATA = {
+        0,127,0,1,255,192,3,255,224,3,231,224,
+        7,217,240,7,223,240,7,217,240,3,231,224,
+        3,255,224,3,255,224,2,255,160,1,127,64,
+        1,62,64,0,156,128,0,156,128,0,73,0,0,73,0,
+        0,62,0,0,62,0,0,62,0,0,28,0
+    };
+
+    poke(V+21, 4);
+    poke (2042, 13);
+    for (int n = 0; n <= 62; n++) {
+      poke(832+n, DATA[n]);
+    }
+    while (true) {
+      for (int x = 0; x <= 200; x++) {
+        poke(V + 4, x);
+        poke(V + 5, x);
+        wait(15);
+      }
+    }
   }
 
 
