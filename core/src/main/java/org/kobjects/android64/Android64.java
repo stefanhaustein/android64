@@ -53,9 +53,7 @@ public class Android64 {
   }
 
   public void cls() {
-    for (int i = 0; i < 80* 25; i++) {
-      poke(1024+i, 32);
-    }
+    vic.cls();
     setCursor(0, 0);
   }
 

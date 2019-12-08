@@ -8,6 +8,7 @@
         android:label="Android64 Demo"
         android:configChanges="keyboardHidden|orientation|screenSize"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/Theme.AppCompat"
         android:supportsRtl="true">
         <activity android:name=".demo.MainActivity">
             <intent-filter>

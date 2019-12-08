@@ -1,8 +1,10 @@
 package org.kobjects.android64.demo;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
+
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.vanniktech.emoji.EmojiManager;
 import com.vanniktech.emoji.twitter.TwitterEmojiProvider;
@@ -14,7 +16,7 @@ import org.kobjects.graphics.Screen;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
   static final int V = 53248;
   static final int S = 54272;

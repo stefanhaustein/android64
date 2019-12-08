@@ -95,7 +95,7 @@ public class Vic implements MemoryListener {
       case 0x15:
         // Enable / disable
         for (int i = 0; i < 8; i++) {
-          spriteManagers[i].sprite.setOpacity((value & (1 << i)) == 0 ? 0 : 1);
+          spriteManagers[i].sprite.setVisible((value & (1 << i)) != 0);
         }
         break;
       case 0x17:
@@ -139,5 +139,7 @@ public class Vic implements MemoryListener {
   }
 
 
-
+  public void cls() {
+    screenManager.cls();
+  }
 }
