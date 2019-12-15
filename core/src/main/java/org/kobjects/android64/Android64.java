@@ -14,6 +14,7 @@ public class Android64 {
 
   public Android64(Screen screen) {
     this.screen = screen;
+    screen.setViewport(320, 200, true);
     vic = new Vic(this);
     sid = new Sid(this);
     memory[1] = -1;
