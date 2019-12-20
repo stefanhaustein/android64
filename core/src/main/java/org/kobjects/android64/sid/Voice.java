@@ -66,7 +66,7 @@ public class Voice implements MemoryListener {
     float frequency = android64.dpeek(startAddress) * 0.06f;
     currentTone = toneGenerator.start(
             Math.max(ToneGenerator.MIN_FREQUENCY,
-                    Math.min (ToneGenerator.MIN_FREQUENCY, frequency)));
+                    Math.min(ToneGenerator.MAX_FREQUENCY, frequency)));
   }
 
 
