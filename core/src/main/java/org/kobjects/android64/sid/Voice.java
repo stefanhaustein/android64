@@ -63,7 +63,10 @@ public class Voice implements MemoryListener {
     toneGenerator.setSustain((sustainRelease / 16) / 15f);
     toneGenerator.setReleaseTimeMs(3 * ATTACK_RATE_TABLE[sustainRelease % 15]);
 
-    currentTone = toneGenerator.start(android64.dpeek(startAddress) * 0.06f);
+    float frequency = android64.dpeek(startAddress) * 0.06f;
+    currentTone = toneGenerator.start(
+            Math.max(ToneGenerator.MIN_FREQUENCY,
+                    Math.min (ToneGenerator.MIN_FREQUENCY, frequency)));
   }
 
 
